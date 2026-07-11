@@ -168,6 +168,65 @@ def delete_note(note_id):
     conn.close()
     return jsonify({"message": "삭제 완료!"})
 
+@app.route("/notes", methods=["POST"])
+def save_note():
+    if "username" not in session:
+        return jsonify({"message": "로그인 필요!"}), 401
+    data = request.get_json()
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+    cursor.execute("""
+        INSERT INTO notes (username, title, content, font, size, date, modified_date)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    """, (
+        session["username"],
+        data.get("title", "새 노트"),
+        data.get("content", ""),
+        data.get("font", ""),
+        data.get("size", "18px"),
+        data.get("date", ""),
+        data.get("modified_date", "")
+    ))
+    conn.commit()
+    note_id = cursor.lastrowid
+    conn.close()
+    return jsonify({"message": "저장 완료!", "id": note_id})
+
+@app.route("/notes/<int:note_id>", methods=["PUT"])
+def update_note(note_id):
+    if "username" not in session:
+        return jsonify({"message": "로그인 필요!"}), 401
+    data = request.get_json()
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+    cursor.execute("""
+        UPDATE notes SET title=?, content=?, font=?, size=?, modified_date=?
+        WHERE id=? AND username=?
+    """, (
+        data.get("title", ""),
+        data.get("content", ""),
+        data.get("font", ""),
+        data.get("size", "18px"),
+        data.get("modified_date", ""),
+        note_id,
+        session["username"]
+    ))
+    conn.commit()
+    conn.close()
+    return jsonify({"message": "수정 완료!"})
+
+@app.route("/notes/<int:note_id>", methods=["DELETE"])
+def delete_note(note_id):
+    if "username" not in session:
+        return jsonify({"message": "로그인 필요!"}), 401
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM notes WHERE id=? AND username=?",
+                  (note_id, session["username"]))
+    conn.commit()
+    conn.close()
+    return jsonify({"message": "삭제 완료!"})
+
 if __name__ == "__main__":
     init_db()
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), debug=False)
