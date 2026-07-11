@@ -86,7 +86,16 @@ def me():
 def logout():
     session.clear()
     return jsonify({"message": "로그아웃 완료!"})
-
+    
+@app.route("/reset-notes")
+def reset_notes():
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM notes")
+    conn.commit()
+    conn.close()
+    return jsonify({"message": "노트 전체 삭제 완료!"})
+    
 @app.route("/notes", methods=["GET"])
 def get_notes():
     if "username" not in session:
