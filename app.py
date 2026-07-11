@@ -1,4 +1,5 @@
 import os
+os.environ.setdefault('FLASK_APP', 'app.py')
 from flask import Flask, request, jsonify, session
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
