@@ -7,6 +7,10 @@ import sqlite3
 
 app = Flask(__name__)
 app.secret_key = "야씨의비밀키1234"
+app.config.update(
+    SESSION_COOKIE_SAMESITE="None",
+    SESSION_COOKIE_SECURE=True
+)
 CORS(app, supports_credentials=True, origins=[
     "http://127.0.0.1:5500",
     "http://localhost:5500",
