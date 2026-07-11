@@ -7,7 +7,11 @@ import sqlite3
 
 app = Flask(__name__)
 app.secret_key = "야씨의비밀키1234"
-CORS(app, supports_credentials=True, origins=["http://127.0.0.1:5500", "http://localhost:5500"])
+CORS(app, supports_credentials=True, origins=[
+    "http://127.0.0.1:5500",
+    "http://localhost:5500",
+    "https://inong0904-dev.github.io"
+])
 
 def init_db():
     conn = sqlite3.connect("database.db")
